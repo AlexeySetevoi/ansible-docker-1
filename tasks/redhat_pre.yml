@@ -1,0 +1,30 @@
+---
+
+#- name: Disable pinned Docker version
+#  file:
+#    dest: "/etc/apt/preferences.d/docker.pref"
+#    state: "absent"
+#  when: not docker__version | d()
+#
+#- name: Enable pinned Docker version
+#  template:
+#    src: "etc/apt/preferences.d/docker.pref.j2"
+#    dest: "/etc/apt/preferences.d/docker.pref"
+#    owner: "root"
+#    group: "root"
+#    mode: "0644"
+#  when: docker__version | d()
+
+- name: Install Docker's dependencies
+  yum:
+    name: "{{ docker__package_dependencies + docker__pip_dependencies }}"
+
+- name: Add Docker's public GPG key to the APT keyring
+  yum_key:
+    id: "{{ docker__yum_key_id }}"
+    url: "{{ docker__yum_key_url }}"
+
+- name: Configure Docker's upstream APT repository
+  yum_repository:
+    repo: "{{ docker__yum_repository }}"
+    update_cache: true

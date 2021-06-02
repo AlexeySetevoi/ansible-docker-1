@@ -1,33 +1,17 @@
 ---
 
-- name: Disable pinned Docker version
-  file:
-    dest: "/etc/apt/preferences.d/docker.pref"
-    state: "absent"
-  when: not docker__version | d()
+- name: 'Include OS Family Specific Variables'
+  include_vars: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      files:
+        - "{{ ansible_os_family | lower }}.yml"
+        - 'empty.yml'
+      paths:
+        - 'vars'
 
-- name: Enable pinned Docker version
-  template:
-    src: "etc/apt/preferences.d/docker.pref.j2"
-    dest: "/etc/apt/preferences.d/docker.pref"
-    owner: "root"
-    group: "root"
-    mode: "0644"
-  when: docker__version | d()
-
-- name: Install Docker's dependencies
-  apt:
-    name: "{{ docker__package_dependencies + docker__pip_dependencies }}"
-
-- name: Add Docker's public GPG key to the APT keyring
-  apt_key:
-    id: "{{ docker__apt_key_id }}"
-    url: "{{ docker__apt_key_url }}"
-
-- name: Configure Docker's upstream APT repository
-  apt_repository:
-    repo: "{{ docker__apt_repository }}"
-    update_cache: true
+- include_tasks:
+    file: "{{ ansible_os_family | lower }}_pre.yml"
 
 - name: Create Docker configuration directories
   file:
@@ -49,10 +33,8 @@
     mode: "0644"
   when: docker__default_daemon_json | d() or docker__daemon_json | d()
 
-- name: Install Docker
-  apt:
-    name: "docker-{{ docker__edition }}"
-    state: "{{ docker__state }}"
+- include_tasks:
+    file: "{{ ansible_os_family | lower }}_install.yml"
 
 - name: Install Python packages
   pip:

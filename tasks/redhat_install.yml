@@ -1,0 +1,6 @@
+---
+
+- name: Install Docker
+  yum:
+    name: "docker-{{ docker__edition }}"
+    state: "{{ docker__state }}"
