@@ -55,3 +55,5 @@ docker__pip_packages: []
 
 docker__pip_docker_state: "present"
 docker__pip_docker_compose_state: "present"
+
+docker__key_url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"

@@ -19,12 +19,15 @@
   yum:
     name: "{{ docker__package_dependencies + docker__pip_dependencies }}"
 
-- name: Add Docker's public GPG key to the APT keyring
-  yum_key:
+- name: Add Docker's public GPG key to the YUM keyring
+  rpm_key:
     id: "{{ docker__yum_key_id }}"
     url: "{{ docker__yum_key_url }}"
 
-- name: Configure Docker's upstream APT repository
+- name: Configure Docker's upstream YUM repository
   yum_repository:
-    repo: "{{ docker__yum_repository }}"
+    baseurl: "{{ docker__yum_repository }}"
     update_cache: true
+    gpgcheck: yes
+    file: "docker-{{ docker__edition }}"
+    name: docker-{{ docker__edition }}-{{ docker__channel | join (' ') }}
