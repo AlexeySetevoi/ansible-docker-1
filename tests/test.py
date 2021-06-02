@@ -5,14 +5,14 @@ def test_docker_version(host):
     assert 0 == host.run("docker --version").rc
 
 
-def test_pinned_docker_version(host):
-    existing_docker_version = host.check_output("docker --version")
-    host.run("sudo apt-get update")
-    host.run("sudo apt-get upgrade")
-    docker_version_after_apt_update = host.check_output("docker --version")
-
-    assert existing_docker_version == docker_version_after_apt_update
-
+# def test_pinned_docker_version(host):
+#     existing_docker_version = host.check_output("docker --version")
+#     host.run("sudo apt-get update")
+#     host.run("sudo apt-get upgrade")
+#     docker_version_after_apt_update = host.check_output("docker --version")
+#
+#     assert existing_docker_version == docker_version_after_apt_update
+#
 
 def test_able_to_access_docker_without_root(host):
     assert "docker" in host.user("test").groups
